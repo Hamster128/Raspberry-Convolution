@@ -14,9 +14,11 @@ https://sourceforge.net/projects/equalizerapo
 It worked that great that i wanted the correction also for my TV which is connected to the amp via digital optical cable. The idea was to use a Raspberry Pi with the Hifiberry DIGI+ board to plug it between the TV and the amp and let it run the convolution filter in real time.
 After trying around a few days i came up with the following solution:
 
+
 ## Preparing Rapsberry Pi
 
 With "Raspberry Pi Manager" i installed Raspberry Pi OS Lite 64 (kernel 5.15.84-v8+) including the WiFi settings on the SD card.
+
 
 ## Activate HifiBerry DIGI+
 
@@ -31,6 +33,7 @@ add the follwing lines to load the DIGI+ driver:
 list sound cards:
 
     cat /proc/asound/cards
+
 
 ## Configure alsa:
 
@@ -56,6 +59,7 @@ list record devices:
 play music:
 
     flac -c -d hello.flac | aplay -D hifiberry
+
 
 ## Install bmc0 dsp:
 https://github.com/bmc0/dsp
@@ -142,3 +146,68 @@ after making changes to /etc/systemd/system/dsp.service:
     sudo systemctl restart dsp
 
 if had to shorten the impulse response wave file a lot otherwise the latency was too long. The zita_convolver should have a low latency even with longer impulse response files, but that didn`t work out that way. So i kept only about 100ms of the original wave file. (used Audacity)
+
+
+## Install dsp as alsa audio device
+
+this makes it possible to play audio with other Raspberry Pi software through the dsp
+
+create the dsp configuration file
+
+    sudo mkdir /etc/ladspa_dsp 
+    sudo nano /etc/ladspa_dsp/config_living_room_speakers
+
+add these lines:
+
+    input_channels=2
+    output_channels=2
+    LC_NUMERIC=C
+    effects_chain=zita_convolver /etc/ladspa_dsp/ir48.wav
+
+copy impulse response file to the configuration path:
+
+    sudo cp ir48.wav /etc/ladspa_dsp
+
+setup the alsa configuration:
+
+    sudo nano /etc/asound.conf
+
+add the following:
+
+    # output to "dsp" for convolved output to hifiberry
+    # first use type plug to convert to format FLOAT (ladspa can only process FLOAT)
+    pcm.dsp {
+      type plug
+      slave {
+        format FLOAT
+        pcm convolver
+      }
+      hint {
+        show on
+        description "Living Room Speakers Convolver."
+      }
+    }
+
+    # the actual convolver
+    pcm.convolver {
+      type ladspa
+      channels 2
+      path "/usr/lib/ladspa"
+      playback_plugins [{
+        label "ladspa_dsp:living_room_speakers"
+      }]
+      slave.pcm digital_out
+    }
+
+    # use plug to convert FLOAT back to S24_LE (HifiBerry DIGI+ can only output S16_LE or S24_LE)
+    pcm.digital_out {
+      type plug
+      slave {
+        format S24_LE
+        pcm hifiberry
+      }
+    }
+
+Test own audio device:
+
+    flac -c -d hello.flac | aplay -D dsp
