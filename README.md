@@ -15,7 +15,7 @@ It worked that great that i wanted the correction also for my TV which is connec
 After trying around a few days i came up with the following solution:
 
 
-## Preparing Rapsberry Pi
+## Preparing Rapsberry Pi 3B
 
 With "Raspberry Pi Manager" i installed Raspberry Pi OS Lite 64 (kernel 5.15.84-v8+) including the WiFi settings on the SD card.
 
