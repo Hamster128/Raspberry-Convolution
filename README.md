@@ -145,7 +145,7 @@ after making changes to /etc/systemd/system/dsp.service:
     sudo systemctl daemon-reload
     sudo systemctl restart dsp
 
-if had to shorten the impulse response wave file a lot otherwise the latency was too long. The zita_convolver should have a low latency even with longer impulse response files, but that didn`t work out that way. So i kept only about 100ms of the original wave file. (used Audacity)
+I had to shorten the impulse response wave file a lot otherwise the latency was too long. The zita_convolver should have a low latency even with longer impulse response files, but that didn`t work out that way. So i kept only about 100ms of the original wave file. (used Audacity)
 
 
 ## Install dsp as alsa audio device
