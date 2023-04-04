@@ -1,6 +1,6 @@
 # Raspberry-Convolution
 
-Recently i stumbled over this YouTube file which shows how to measure your listening room and make an impulse response file with "REW" to use it with Equilizer APO on a PC for real time room correction.
+Recently i stumbled over this YouTube video which shows how to measure your listening room and make an impulse response file with "REW" to use it with Equilizer APO on a PC for real time room correction.
 
 https://youtu.be/5YcH7j2-L1Y
 
