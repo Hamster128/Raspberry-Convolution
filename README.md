@@ -113,7 +113,7 @@ content for new systemd config file:
     ExecStartPre=arecord -f S24_LE -c 2 -r 48000 -D hifiberry -s 1
 
     # start the dsp as a loop back device
-    ExecStart=dsp -c 2 -e s16 -r 48000 -t alsa hifiberry -o hifiberry zita_convolver ir48.wav
+    ExecStart=sudo nice --19 dsp -c 2 -e s16 -r 48000 -t alsa hifiberry -o hifiberry zita_convolver ir48.wav
 
     # restart this service in any case, even on exit 0 success
     Restart=always
@@ -132,13 +132,7 @@ Start new service:
 
     sudo systemctl start dsp
 
-Keep process priority high:
 
-    sudo crontab -e
-
-add this line:
-
-    * * * * * ls /proc/$(pidof dsp)/task | xargs sudo renice -19
 
 after making changes to /etc/systemd/system/dsp.service:
 
